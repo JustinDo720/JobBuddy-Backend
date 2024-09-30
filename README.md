@@ -28,22 +28,37 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [x] Tie Django with Rest Framework 
 
 ### Add a Job
-- [ ] Create Job Model
-- [ ] Create POST API to add a job
-- [ ] Test the API with Postman or Django Rest Framework UI
+- [x] Create Job Model
+- [x] Job Serializer 
+- [x] Create POST API to add a job
+- [x] Test the API with Postman or Django Rest Framework UI
 - [ ] Integrate the API with the React frontend form
 
 ### Edit a Job
-- [ ] Create PUT/PATCH API to edit a job
-- [ ] Ensure proper validation for updating job details
-- [ ] Test the API with Postman or Django Rest Framework UI
+- [x] Create PUT/PATCH API to edit a job
+- [x] Ensure proper validation for updating job details
+- [x] Test the API with Postman or Django Rest Framework UI
 - [ ] Integrate the edit functionality with the React frontend
 
 ### Delete a Job
-- [ ] Create DELETE API to remove a job
-- [ ] Confirm job deletion with validation and feedback
-- [ ] Test the API with Postman or Django Rest Framework UI
+- [x] Create DELETE API to remove a job
+- [x] Confirm job deletion with validation and feedback
+- [x] Test the API with Postman or Django Rest Framework UI
 - [ ] Integrate the delete functionality with the React frontend
+
+### Accessing Indiviual Job 
+- [ ] Singly retrieve information from ONE job via ID
+- [ ] Work on Hyperlinking Job List with this new API 
+
+### Set up Django Corsheader 
+- [ ] Install and add Corsheader to our Django Application 
+- [ ] Fix up `settings.py` for our REACT application to send request
+
+### Work on Job Images 
+- [ ] Create a Job Image Model where one Job have any many Images
+- [ ] Create that POST API for uploading Images 
+- [ ] Create that Edit API for uploading Images 
+- [ ] Update the Job Serializer to include all Images related to that job post 
 
 
 

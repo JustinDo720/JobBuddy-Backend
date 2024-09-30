@@ -17,10 +17,9 @@ class Job(models.Model):
     # Status Choices for our Choice field 
     STATUS_CHOICES = [
         ('applied', 'Applied'),
-        ('interviewed', 'Interviewed'),
-        ('offer_received', 'Offer Received'),
-        ('rejected', 'Rejected'),
-        ('accepted', 'Accepted'),
+        ('interview', 'Interview'),
+        ('offer', 'Offer'),
+        ('rejected', 'Rejected')
     ]
 
     job_name = models.CharField(max_length=80)
@@ -33,7 +32,11 @@ class Job(models.Model):
         
     @classmethod
     def get_status_choices(cls):
-        return cls.STATUS_CHOICES
+        # We're getting the initial value in the tuple because when we post
+        # we're posting with this set of values
+        return [stat[0] for stat in cls.STATUS_CHOICES]
+
+
 
 
     
