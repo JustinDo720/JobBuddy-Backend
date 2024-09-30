@@ -11,10 +11,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Setting up Django Environ 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -40,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # My Applications,
     'job_buddy_app',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -78,10 +84,21 @@ WSGI_APPLICATION = 'job_buddy.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('LOCAL_DB_NAME'),
+        'USER': env('LOCAL_DB_USER'),
+        'PASSWORD': env('LOCAL_DB_PASSWORD'),
+        'HOST': env('LOCAL_DB_HOST'),
+        'PORT': env('LOCAL_DB_PORT'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",  # Using BASE_DIR to point to the database file
+#     }
+# }
 
 
 # Password validation
