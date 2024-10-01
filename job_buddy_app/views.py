@@ -21,7 +21,21 @@ class JobList(generics.ListCreateAPIView):
     def list(self, request):
         queryset = self.get_queryset()
         # Because we're displaying a lot of Jobs...
-        serializer = JobSerializer(queryset, many=True)
+        serializer = JobSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SpecificJob(generics.RetrieveAPIView):
+    """
+        Given an Id, we're going to retrieve a specific Job and return all the information from it.
+            1) This is a normal RetrieveAPIView, which means only GET method
+    """
+    queryset = Job.objects.all() 
+    serializer_class = JobSerializer
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object() 
+        serializer = self.get_serializer(instance, many=False, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
      
 
@@ -48,7 +62,7 @@ class UpdateJob(generics.RetrieveUpdateAPIView):
         # Automaic Approach:
         # uses the lookup_field to grab our instance to edit 
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data, partial=True, context={'request': request})
 
         if serializer.is_valid():
             serializer.save() 
