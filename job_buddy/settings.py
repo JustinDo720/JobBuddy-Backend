@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import environ
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,8 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # My Applications,
     'job_buddy_app',
+    'job_buddy_users',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +159,29 @@ CORS_ORIGIN_WHITELIST = (
 # Media Files
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
+
+# Django SWT Authentication System
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # During Api requests, we use SJWT
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Enable session-based and basic auth for the browsable API
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+# We're not using Sliding Tokens because this isn't a session based application.
+# We want our users to be logged throughout days 
+#
+# We're using Rotate Tokens for extra security because when issuing a new Access Token we'll get a new refresh token
+# However, the lifespan will remain the same
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Short lifetime for security
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token allows users to get new access tokens
+    'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
+    'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
+}

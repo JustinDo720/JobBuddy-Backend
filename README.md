@@ -62,10 +62,13 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [x] Update the Job Serializer to include all Images related to that job post 
 
 ### Work on Authentication 
-- [ ] Django Authentication
-- [ ] Djoser
-- [ ] Simple JWT
-- [ ] Update Permissions on API 
+- [x] Django Authentication
+- [x] Djoser for Simple User Register/Login/Update endpoints 
+- [x] Simple JWT
+- [x] Update Permissions on API 
+- [x] Use Postman to test out authentication endpoints
+- [ ] Optional: Custom TokenPairView that includes: remaining lifespan with user that requested
+- [ ] Optional: Djoser Email confirmation for account activation (Django All-Auth)
 
 ### User & Model Relationships
 - [ ] With Permissions, we tie users and jobs 
