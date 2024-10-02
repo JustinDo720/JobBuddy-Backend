@@ -37,8 +37,6 @@ class Job(models.Model):
         return [stat[0] for stat in cls.STATUS_CHOICES]
 
 
-
-
-    
-
-
+class JobImages(models.Model):
+    job = models.ForeignKey(Job, related_name='job_images', on_delete=models.CASCADE)
+    job_img = models.ImageField(upload_to='job_img/')

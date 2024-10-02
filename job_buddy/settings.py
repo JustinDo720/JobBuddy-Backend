@@ -138,6 +138,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -150,3 +151,7 @@ CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
   'http://localhost:3000',
 )
+
+# Media Files
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')

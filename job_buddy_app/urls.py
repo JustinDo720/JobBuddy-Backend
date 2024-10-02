@@ -19,8 +19,11 @@ from . import views
 
 urlpatterns = [
     path('', views.JobList.as_view(), name='job_list'),
+    path('jobs/images/', views.JobImageList.as_view(), name='images_job'),
+    path('jobs/images/<int:id>/', views.IndJobImage.as_view(), name='individual_image_job'),
     path('jobs/view/<int:id>/', views.SpecificJob.as_view(), name='specific_job'),
     path('jobs/edit/<int:id>/', views.UpdateJob.as_view(), name='update_job'),
     path('jobs/delete/<int:id>/', views.RemoveJob.as_view(), name='remove_job'),
+    
 
 ]

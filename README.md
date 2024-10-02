@@ -55,10 +55,11 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [x] Fix up `settings.py` for our REACT application to send request
 
 ### Work on Job Images 
-- [ ] Create a Job Image Model where one Job have any many Images
-- [ ] Create that POST API for uploading Images 
-- [ ] Create that Edit API for uploading Images 
-- [ ] Update the Job Serializer to include all Images related to that job post 
+- [x] Create a Job Image Model where one Job have any many Images
+- [x] Create that POST API for uploading Images 
+- [x] Create that Edit API for uploading Images 
+- [x] Create Delete API as well
+- [x] Update the Job Serializer to include all Images related to that job post 
 
 ### Work on Authentication 
 - [ ] Django Authentication
