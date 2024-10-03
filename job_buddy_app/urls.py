@@ -24,6 +24,8 @@ urlpatterns = [
     path('jobs/view/<int:id>/', views.SpecificJob.as_view(), name='specific_job'),
     path('jobs/edit/<int:id>/', views.UpdateJob.as_view(), name='update_job'),
     path('jobs/delete/<int:id>/', views.RemoveJob.as_view(), name='remove_job'),
-    
-
+    # Djoser Configs
+    path('activate/<uid>/<token>/', views.redirect_activation_url, name='activate'),
+    path('password/reset/confirm/<uid>/<token>/', views.redirect_password_reset_url, name='password_reset'),
+    path('username/reset/confirm/<uid>/<token>/', views.redirect_username_reset_url, name='username_reset'),       
 ]

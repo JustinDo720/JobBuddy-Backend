@@ -1,12 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.response import Response 
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 from .serializers import JobSerializer, JobImagesSerializer
 from .models import Job, JobImages
+from django.core.mail import send_mail
+from django.http import HttpResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here. 
+
+REACT_URL = 'http://localhost:3000'
 
 class JobList(generics.ListCreateAPIView):
     """
@@ -148,3 +152,13 @@ class IndJobImage(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.delete() 
         return Response({"message": "Job Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+# Djoser Redirects to React 
+def redirect_activation_url(request, uid, token):
+    return redirect(f'{REACT_URL}/activate/{uid}/{token}')
+
+def redirect_password_reset_url(request, uid, token):
+    return redirect(f'{REACT_URL}/password/reset/confirm/{uid}/{token}')
+
+def redirect_username_reset_url(request, uid, token):
+    return redirect(f'{REACT_URL}/username/reset/confirm/{uid}/{token}')

@@ -70,8 +70,17 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [ ] Optional: Custom TokenPairView that includes: remaining lifespan with user that requested
 - [x] Optional: Djoser Email confirmation for account activation (Django All-Auth)
 
+### Django Emails
+- [x] Set up Email Connectivty with Gmail
+- [x] Make sure Activation Emails with Djoser are sent
+    - [x] Passwords Reset
+    - [x] Username Reset
+- [x] Redirect to Front End Url
+
 ### User & Model Relationships
 - [ ] With Permissions, we tie users and jobs 
+- [x] Emails for Login
+    - [x] Custom User Model 
 - [x] Users must be logged in for us to post a job to thier account 
 
 ### Work on React and our Finished Rest API 

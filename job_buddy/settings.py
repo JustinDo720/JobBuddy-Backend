@@ -186,15 +186,20 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
 }
 
-REACT_MAIN_URL = 'http://localhost:3000'
-
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '%s/password/reset/confirm/{uid}/{token}' % REACT_MAIN_URL,
-    'USERNAME_RESET_CONFIRM_URL': '%s/username/reset/confirm/{uid}/{token}' % REACT_MAIN_URL,
-    'ACTIVATION_URL': '%s/activate/{uid}/{token}' % REACT_MAIN_URL, # We just need to make sure this is sent to the front end page 
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '/activate/{uid}/{token}', # We just need to make sure this is sent to the front end page 
     'SEND_ACTIVATION_EMAIL': True,
 }
 
 # Custom User Model 
 AUTH_USER_MODEL = 'job_buddy_users.JobBuddyUser'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('JB_EMAIL_HOST') 
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Use TLS
+EMAIL_HOST_USER = env('JB_EMAIL_HOST_USER')  
+EMAIL_HOST_PASSWORD = env('JB_EMAIL_HOST_PASSWORD') 
