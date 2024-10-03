@@ -185,3 +185,16 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
     'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
 }
+
+REACT_MAIN_URL = 'http://localhost:3000'
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '%s/password/reset/confirm/{uid}/{token}' % REACT_MAIN_URL,
+    'USERNAME_RESET_CONFIRM_URL': '%s/username/reset/confirm/{uid}/{token}' % REACT_MAIN_URL,
+    'ACTIVATION_URL': '%s/activate/{uid}/{token}' % REACT_MAIN_URL, # We just need to make sure this is sent to the front end page 
+    'SEND_ACTIVATION_EMAIL': True,
+}
+
+# Custom User Model 
+AUTH_USER_MODEL = 'job_buddy_users.JobBuddyUser'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
