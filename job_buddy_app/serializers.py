@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Job, JobImages
+from job_buddy_users.serializers import JobBuddyUserSerializer
 
 
 
@@ -38,12 +39,18 @@ class JobImagesSerializer(serializers.ModelSerializer):
         )
 
 
-class JobSerializer(serializers.HyperlinkedModelSerializer):
+class JobSerializer(serializers.ModelSerializer):
     status_options = serializers.SerializerMethodField()
     # We're using IdentityField because it helps us create a url for itself rather than a another model
     job_link = serializers.HyperlinkedIdentityField(
         view_name='specific_job',
         lookup_field='id'
+    )
+    user_link = serializers.HyperlinkedRelatedField(
+        view_name='job_buddy_users:specific_user',
+        lookup_field='id', 
+        read_only=True,
+        source='user'
     )
     # Because we're using 'job_images' there must be a REVERSE because your Job Model doesn't automatically have the field "job_names"
     # So we make sure we update our model to:
@@ -61,6 +68,8 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         model = Job
         fields = (
             'id',
+            'user',
+            'user_link',
             'job_name',
             'job_link',
             'company_name',
@@ -69,4 +78,3 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
             'status_options',
             'job_images',
         )
-

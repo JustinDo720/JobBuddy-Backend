@@ -1,4 +1,5 @@
 from django.db import models
+from job_buddy_users.models import JobBuddyUser
 
 # # Create your models here.
 class Job(models.Model):
@@ -22,6 +23,8 @@ class Job(models.Model):
         ('rejected', 'Rejected')
     ]
 
+    # We need an owner for this job --> One User could have multiple job posts so... let's use foreign keys
+    user = models.ForeignKey(JobBuddyUser, on_delete=models.CASCADE)
     job_name = models.CharField(max_length=80)
     company_name = models.CharField(max_length=80)
     salary = models.IntegerField()

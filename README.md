@@ -78,7 +78,7 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [x] Redirect to Front End Url
 
 ### User & Model Relationships
-- [ ] With Permissions, we tie users and jobs 
+- [x] With Permissions, we tie users and jobs 
 - [x] Emails for Login
     - [x] Custom User Model 
 - [x] Users must be logged in for us to post a job to thier account 
@@ -86,3 +86,17 @@ The backend is designed to offer seamless integration with the React frontend, u
 ### Work on React and our Finished Rest API 
 - [ ] With all the endpoints, we need to tie our Django Backend with the React Frontend
 
+
+### Refactor and Other things to add
+- [ ] It's good practice to Create 2 **Seperate** Serializer:
+    - One for Post: Necessary fields that are required for Posting
+    - One for Get: present specifc fields
+    - For instance I don't need (user) and (user_link) 
+        - However Post needs user while Get doesn't
+ - [ ] Order Jobs by most recent?
+ - [ ] Can the homepage Show things for our users to choose:
+    - Jobs
+    - Users
+    - Images
+- [ ] API to query a specific User's post
+    - If i want the queryset for user: "Thy" then it should return **ONLY** job posts by her

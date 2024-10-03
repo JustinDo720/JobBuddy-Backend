@@ -17,11 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.urls import path,include
+from . import views
 
+app_name = 'job_buddy_users'  # This is crucial for namespacing
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('api-auth/', include('rest_framework.urls')),
+    path('details/<int:id>/', views.SpecificUser.as_view(), name='specific_user'),
 ]
