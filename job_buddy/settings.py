@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import environ
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # My Applications,
     'job_buddy_app',
+    'job_buddy_users',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'job_buddy.urls'
@@ -136,8 +142,64 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Corsheaders
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:8000',
+  'http://localhost:3000',
+)
+
+# Media Files
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
+
+# Django SWT Authentication System
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # During Api requests, we use SJWT
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Enable session-based and basic auth for the browsable API
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+# We're not using Sliding Tokens because this isn't a session based application.
+# We want our users to be logged throughout days 
+#
+# We're using Rotate Tokens for extra security because when issuing a new Access Token we'll get a new refresh token
+# However, the lifespan will remain the same
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Short lifetime for security
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token allows users to get new access tokens
+    'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
+    'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
+}
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '/activate/{uid}/{token}', # We just need to make sure this is sent to the front end page 
+    'SEND_ACTIVATION_EMAIL': True,
+}
+
+# Custom User Model 
+AUTH_USER_MODEL = 'job_buddy_users.JobBuddyUser'
+
+# Email 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('JB_EMAIL_HOST') 
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Use TLS
+EMAIL_HOST_USER = env('JB_EMAIL_HOST_USER')  
+EMAIL_HOST_PASSWORD = env('JB_EMAIL_HOST_PASSWORD') 

@@ -18,8 +18,17 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.JobList.as_view(), name='job_list'),
+    path('', views.home_page, name='home_page'),
+    path('jobs/', views.JobList.as_view(), name='job_list'),
+    path('jobs/images/', views.JobImageList.as_view(), name='images_job'),
+    path('jobs/images/<int:id>/', views.IndJobImage.as_view(), name='individual_image_job'),
+    path('jobs/view/<int:id>/', views.SpecificJob.as_view(), name='specific_job'),
     path('jobs/edit/<int:id>/', views.UpdateJob.as_view(), name='update_job'),
     path('jobs/delete/<int:id>/', views.RemoveJob.as_view(), name='remove_job'),
-
+    # User Jobs
+    path('jobs/users/<int:id>/', views.UserJobList.as_view(), name='user_job'),
+    # Djoser Configs
+    path('activate/<uid>/<token>/', views.redirect_activation_url, name='activate'),
+    path('password/reset/confirm/<uid>/<token>/', views.redirect_password_reset_url, name='password_reset'),
+    path('username/reset/confirm/<uid>/<token>/', views.redirect_username_reset_url, name='username_reset'),       
 ]

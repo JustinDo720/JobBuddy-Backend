@@ -47,18 +47,56 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [ ] Integrate the delete functionality with the React frontend
 
 ### Accessing Indiviual Job 
-- [ ] Singly retrieve information from ONE job via ID
-- [ ] Work on Hyperlinking Job List with this new API 
+- [x] Singly retrieve information from ONE job via ID
+- [x] Work on Hyperlinking Job List with this new API 
 
 ### Set up Django Corsheader 
-- [ ] Install and add Corsheader to our Django Application 
-- [ ] Fix up `settings.py` for our REACT application to send request
+- [x] Install and add Corsheader to our Django Application 
+- [x] Fix up `settings.py` for our REACT application to send request
 
 ### Work on Job Images 
-- [ ] Create a Job Image Model where one Job have any many Images
-- [ ] Create that POST API for uploading Images 
-- [ ] Create that Edit API for uploading Images 
-- [ ] Update the Job Serializer to include all Images related to that job post 
+- [x] Create a Job Image Model where one Job have any many Images
+- [x] Create that POST API for uploading Images 
+- [x] Create that Edit API for uploading Images 
+- [x] Create Delete API as well
+- [x] Update the Job Serializer to include all Images related to that job post 
+
+### Work on Authentication 
+- [x] Django Authentication
+- [x] Djoser for Simple User Register/Login/Update endpoints 
+- [x] Simple JWT
+- [x] Update Permissions on API 
+- [x] Use Postman to test out authentication endpoints
+- [ ] Optional: Custom TokenPairView that includes: remaining lifespan with user that requested
+- [x] Optional: Djoser Email confirmation for account activation (Django All-Auth)
+
+### Django Emails
+- [x] Set up Email Connectivty with Gmail
+- [x] Make sure Activation Emails with Djoser are sent
+    - [x] Passwords Reset
+    - [x] Username Reset
+- [x] Redirect to Front End Url
+
+### User & Model Relationships
+- [x] With Permissions, we tie users and jobs 
+- [x] Emails for Login
+    - [x] Custom User Model 
+- [x] Users must be logged in for us to post a job to thier account 
+
+### Work on React and our Finished Rest API 
+- [ ] With all the endpoints, we need to tie our Django Backend with the React Frontend
 
 
-
+### Refactor and Other things to add
+- [x] It's good practice to Create 2 **Seperate** Serializer:
+    - One for Post: Necessary fields that are required for Posting
+    - One for Get: present specifc fields
+    - For instance I don't need (user) and (user_link) 
+        - However Post needs user while Get doesn't
+ - [x] Order Jobs by most recent?
+ - [x] Can the homepage Show things for our users to choose:
+    - Jobs
+    - Users
+    - Images
+- [x] API to query a specific User's post
+    - If i want the queryset for user: "Thy" then it should return **ONLY** job posts by her
