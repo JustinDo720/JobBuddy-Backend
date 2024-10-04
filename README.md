@@ -88,7 +88,7 @@ The backend is designed to offer seamless integration with the React frontend, u
 
 
 ### Refactor and Other things to add
-- [ ] It's good practice to Create 2 **Seperate** Serializer:
+- [x] It's good practice to Create 2 **Seperate** Serializer:
     - One for Post: Necessary fields that are required for Posting
     - One for Get: present specifc fields
     - For instance I don't need (user) and (user_link) 

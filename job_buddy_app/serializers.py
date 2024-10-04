@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Job, JobImages
 
 
-
 class JobImagesSerializer(serializers.ModelSerializer):
     job_name = serializers.SerializerMethodField()
     # Here we use Related Field instead of Identity because we're referring to another Model
@@ -17,7 +16,7 @@ class JobImagesSerializer(serializers.ModelSerializer):
     
     # Here, we're pointing to our own image link
     # So we could view this image object individually
-    job_img_link = serializers.HyperlinkedIdentityField(
+    job_img_api_link = serializers.HyperlinkedIdentityField(
         view_name='individual_image_job',
         lookup_field='id',
     )
@@ -30,12 +29,17 @@ class JobImagesSerializer(serializers.ModelSerializer):
         model = JobImages
         fields = (
             'id',
-            'job',
             'job_name',
             'job_url',
             'job_img',
-            'job_img_link',
+            'job_img_api_link',
         )
+
+# This is to avoid adding additional uncessary fields to our base JobImagesSerializer 
+class RequiredJobImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobImages
+        fields = "__all__"
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -68,10 +72,10 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         fields = (
             'id',
-            'user',
             'user_link',
             'job_name',
             'job_link',
+            'job_post_date',
             'company_name',
             'salary',
             'status',
@@ -84,4 +88,12 @@ class JobSerializer(serializers.ModelSerializer):
 class RequiredJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
-        fields = "__all__"
+        fields = (
+            'id',
+            'user',
+            'job_post_date',
+            'job_name',
+            'company_name',
+            'salary',
+            'status'
+        )

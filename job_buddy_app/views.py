@@ -4,15 +4,40 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response 
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
-from .serializers import JobSerializer, JobImagesSerializer
+from .serializers import JobSerializer, JobImagesSerializer, RequiredJobImagesSerializer, RequiredJobSerializer
 from .models import Job, JobImages
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 
+# Mixins - We can share specific functionality 
+
+class JobSerializerSelectorMixin:
+    # Because each API View will have this `self.get_serializer` method
+    # We need to check wheather or not our method is POST
+    #
+    # If Post then we use our RequiredJobSerializer which includes NECESSARY fields for posting 
+    # If Get then we use our normal JobSerializer to provide extra information like:
+    #   user url
+    #   job url
+    # And others....
+    def get_serializer_class(self):
+        if self.request.method == 'POST' or self.request.method == 'PUT':
+            return RequiredJobSerializer
+        return JobSerializer
+
+class JobImgSerializerSelectorMixin:
+    def get_serializer_class(self):
+        if self.request.method == 'POST' or self.request.method == 'PUT':
+            return RequiredJobImagesSerializer
+        return JobImagesSerializer
+    
+
+
 # Create your views here. 
 
 REACT_URL = 'http://localhost:3000'
+
 
 @api_view(['GET'])
 def home_page(request, format=None):
@@ -25,15 +50,19 @@ def home_page(request, format=None):
         'All Job Images': reverse('images_job', request=request, format=format),
     })
 
-class JobList(generics.ListCreateAPIView):
+class JobList(JobSerializerSelectorMixin, generics.ListCreateAPIView):
     """
         We list ALL Job Instance from our Users:
             1) This is a ListCreateAPIView, which means it allows GET and POST 
             2) We're displaying all jobs; therefore, our serializer sets `many=True`
         
+        We also have a Mixin to choose our serializer based on:
+            1) Post Request --> RequiredJobSerializer 
+            2) Get Request --> JobSerializer
+        
     """
+    # Because of our Mixin, we DON'T need a serializer_class field: serializer_class = JobSerialzier 
     queryset = Job.objects.all().order_by('-job_post_date') 
-    serializer_class = JobSerializer
 
     # "GET" Method
     def list(self, request):
@@ -42,10 +71,12 @@ class JobList(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class SpecificJob(generics.RetrieveAPIView):
     """
         Given an Id, we're going to retrieve a specific Job and return all the information from it.
             1) This is a normal RetrieveAPIView, which means only GET method
+            
     """
     queryset = Job.objects.all() 
     serializer_class = JobSerializer
@@ -57,7 +88,7 @@ class SpecificJob(generics.RetrieveAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
      
 
-class UpdateJob(generics.RetrieveUpdateAPIView):
+class UpdateJob(JobSerializerSelectorMixin, generics.RetrieveUpdateAPIView):
 
     """
         Given an ID, we retrieve the Job Instance for our users to Edit:
@@ -65,11 +96,15 @@ class UpdateJob(generics.RetrieveUpdateAPIView):
             2) Again, we're using ID for now instead of "slugs"
             3) This is a RetrieveUpdateAPIView, which means it allows GET, PUT, PATCH 
             4) Automatic Approach with queryset to use `self.get_object()`
+        
+        We also have a Mixin to choose our serializer based on:
+            1) Post Request --> RequiredJobSerializer 
+            2) Get Request --> JobSerializer
 
+        This means we WON'T need a `serializer_class` field
     """
 
-    queryset = Job.objects.all() 
-    serializer_class = JobSerializer
+    queryset = Job.objects.all()
     lookup_field = 'id'
 
     def update(self, request, *args, **kwargs):
@@ -88,6 +123,7 @@ class UpdateJob(generics.RetrieveUpdateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
 class RemoveJob(generics.RetrieveDestroyAPIView):
     """
         Given an ID, we retrieve the Job Instance for our users to Delete:
@@ -96,6 +132,7 @@ class RemoveJob(generics.RetrieveDestroyAPIView):
     """
     
     queryset = Job.objects.all()
+    # Since this doesn't deal with posting, we could just add in our normal JobSerializer class for Retrieving (GET request)
     serializer_class = JobSerializer
     lookup_field = 'id'
 
@@ -107,15 +144,18 @@ class RemoveJob(generics.RetrieveDestroyAPIView):
         
 # Job Images
 
-class JobImageList(generics.ListCreateAPIView):
+# Again Post request will have a Serializer that includes only NECESSARY fields
+# Get request will have additional data fields  
+# So let's create and add in our Mixin
+class JobImageList(JobImgSerializerSelectorMixin, generics.ListCreateAPIView):
     """
         Listing all the Job related Images from ALL users:
             1) This is a ListCreateAPIView, which means it allows GET and POST
 
     """
     queryset = JobImages.objects.all()
-    serializer_class = JobImagesSerializer
     parser_classes = (MultiPartParser, FormParser)
+    
 
     def list(self, request):
         # Because we supplied "queryset", we could retrieve this the automatic way
@@ -138,7 +178,7 @@ class JobImageList(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class IndJobImage(generics.RetrieveUpdateDestroyAPIView):
+class IndJobImage(JobImgSerializerSelectorMixin, generics.RetrieveUpdateDestroyAPIView):
     """
         Individual Job Image 
         1) It's a RetrieveUpdateDestroy meaning it takes in a GET, PUT, DELETE
@@ -146,8 +186,8 @@ class IndJobImage(generics.RetrieveUpdateDestroyAPIView):
     
     """
     queryset = JobImages.objects.all()
-    serializer_class = JobImagesSerializer
     lookup_field = 'id'
+
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object() 
@@ -155,17 +195,19 @@ class IndJobImage(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, partial=True, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.delete() 
         return Response({"message": "Job Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
+
 class UserJobList(generics.ListAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer

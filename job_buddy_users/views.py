@@ -21,6 +21,14 @@ class JobUsers(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpecificUser(generics.RetrieveAPIView):
+    """
+        List all Details about a Specific User via id:
+            1) this includes things like:
+                - last login
+                - join date 
+                - permissions 
+            etc
+    """
     queryset = JobBuddyUser.objects.all()
     serializer_class = JobBuddyUserSerializer
     lookup_field = 'id'
@@ -29,6 +37,21 @@ class SpecificUser(generics.RetrieveAPIView):
         instance = self.get_object()    # Basically: JobBuddyUser.objects.get(id=args[0])
         serailizer = self.get_serializer(instance, many=False)
         return Response(serailizer.data, status=status.HTTP_200_OK)
+
+class SpecificUserJobs(generics.RetrieveAPIView):
+    """
+        List Specific Users in our database HOWEVER:
+            1) These users come with their respected Job List
+            2) Returns a list of users with their job posting
+    """
+    queryset = JobBuddyUser.objects.all()
+    serializer_class = UserSpecificJobSerialzier
+    lookup_field = 'id'
+
+    def list(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class UserSpecificJobs(generics.ListAPIView):
     """

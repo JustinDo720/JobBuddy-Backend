@@ -29,4 +29,5 @@ urlpatterns = [
     path('all/', views.JobUsers.as_view(), name='all_users'),
     path('jobs/', views.UserSpecificJobs.as_view(), name='all_users_job'),
     path('details/<int:id>/', views.SpecificUser.as_view(), name='specific_user'),
+    path('details/<int:id>/jobs/', views.SpecificUserJobs.as_view(), name='specific_user_jobs')
 ]
