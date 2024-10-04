@@ -24,8 +24,11 @@ class Job(models.Model):
     ]
 
     # We need an owner for this job --> One User could have multiple job posts so... let's use foreign keys
-    user = models.ForeignKey(JobBuddyUser, on_delete=models.CASCADE)
+    # This will have a related_name of user_jobs for my UserJobSerializer 
+    # which uses this Job Model for a Reverse
+    user = models.ForeignKey(JobBuddyUser, related_name='user_jobs', on_delete=models.CASCADE)
     job_name = models.CharField(max_length=80)
+    job_post_date = models.DateTimeField(auto_now_add=True)
     company_name = models.CharField(max_length=80)
     salary = models.IntegerField()
     status = models.CharField(max_length=35, choices=STATUS_CHOICES, default='applied')

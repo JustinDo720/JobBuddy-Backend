@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Job, JobImages
-from job_buddy_users.serializers import JobBuddyUserSerializer
 
 
 
@@ -40,6 +39,7 @@ class JobImagesSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
+
     status_options = serializers.SerializerMethodField()
     # We're using IdentityField because it helps us create a url for itself rather than a another model
     job_link = serializers.HyperlinkedIdentityField(
@@ -78,3 +78,10 @@ class JobSerializer(serializers.ModelSerializer):
             'status_options',
             'job_images',
         )
+
+# Required Fields for Job Serializers.
+# We could use this for POSTING because there are no unnecessary fields
+class RequiredJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = "__all__"

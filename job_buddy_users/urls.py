@@ -26,5 +26,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('api-auth/', include('rest_framework.urls')),
+    path('all/', views.JobUsers.as_view(), name='all_users'),
+    path('jobs/', views.UserSpecificJobs.as_view(), name='all_users_job'),
     path('details/<int:id>/', views.SpecificUser.as_view(), name='specific_user'),
 ]

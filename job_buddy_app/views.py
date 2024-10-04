@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from rest_framework.reverse import reverse
+from rest_framework.decorators import api_view
 from rest_framework.response import Response 
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
@@ -12,6 +14,17 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 REACT_URL = 'http://localhost:3000'
 
+@api_view(['GET'])
+def home_page(request, format=None):
+    return Response({
+        # We use reverse() function to grab links from view_names
+        # Format deals with .json files or .api files so depending on our format suffix 
+        'All Job': reverse('job_list', request=request, format=format),
+        'All Users': reverse('job_buddy_users:all_users', request=request, format=format),
+        'Users with Jobs': reverse('job_buddy_users:all_users_job', request=request, format=format),
+        'All Job Images': reverse('images_job', request=request, format=format),
+    })
+
 class JobList(generics.ListCreateAPIView):
     """
         We list ALL Job Instance from our Users:
@@ -19,7 +32,7 @@ class JobList(generics.ListCreateAPIView):
             2) We're displaying all jobs; therefore, our serializer sets `many=True`
         
     """
-    queryset = Job.objects.all() 
+    queryset = Job.objects.all().order_by('-job_post_date') 
     serializer_class = JobSerializer
 
     # "GET" Method
@@ -152,6 +165,16 @@ class IndJobImage(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.delete() 
         return Response({"message": "Job Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+class UserJobList(generics.ListAPIView):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+    lookup_field = 'id'
+
+    def list(self, request, *args, **kwargs):
+        user_job_queryset = Job.objects.filter(user=args[0])
+        serializer = self.get_serializer(user_job_queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Djoser Redirects to React 
 def redirect_activation_url(request, uid, token):

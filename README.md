@@ -93,10 +93,10 @@ The backend is designed to offer seamless integration with the React frontend, u
     - One for Get: present specifc fields
     - For instance I don't need (user) and (user_link) 
         - However Post needs user while Get doesn't
- - [ ] Order Jobs by most recent?
- - [ ] Can the homepage Show things for our users to choose:
+ - [x] Order Jobs by most recent?
+ - [x] Can the homepage Show things for our users to choose:
     - Jobs
     - Users
     - Images
-- [ ] API to query a specific User's post
+- [x] API to query a specific User's post
     - If i want the queryset for user: "Thy" then it should return **ONLY** job posts by her
