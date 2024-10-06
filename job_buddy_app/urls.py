@@ -30,5 +30,7 @@ urlpatterns = [
     # Djoser Configs
     path('activate/<uid>/<token>/', views.redirect_activation_url, name='activate'),
     path('password/reset/confirm/<uid>/<token>/', views.redirect_password_reset_url, name='password_reset'),
-    path('username/reset/confirm/<uid>/<token>/', views.redirect_username_reset_url, name='username_reset'),       
+    path('username/reset/confirm/<uid>/<token>/', views.redirect_username_reset_url, name='username_reset'),   
+    # Status and State Choices
+    path('choices', views.StatusStateOptions.as_view(), name='choices')    
 ]

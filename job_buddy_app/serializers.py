@@ -44,9 +44,10 @@ class RequiredJobImagesSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
 
-    status_options = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField
+
     # We're using IdentityField because it helps us create a url for itself rather than a another model
-    job_link = serializers.HyperlinkedIdentityField(
+    job_api_link = serializers.HyperlinkedIdentityField(
         view_name='specific_job',
         lookup_field='id'
     )
@@ -65,8 +66,8 @@ class JobSerializer(serializers.ModelSerializer):
 
     # Because we're following the naming convention: get_<serializer_method_field>
     # We won't need to provide a "method_name" for status_options 
-    def get_status_options(self, job_obj):
-        return job_obj.get_status_choices()
+    def get_location(self, job_object):
+        return job_object.location()
 
     class Meta:
         model = Job
@@ -74,12 +75,14 @@ class JobSerializer(serializers.ModelSerializer):
             'id',
             'user_link',
             'job_name',
-            'job_link',
+            'job_api_link',
             'job_post_date',
             'company_name',
+            'job_link',           
             'salary',
             'status',
-            'status_options',
+            'location',
+            'job_summary',
             'job_images',
         )
 
@@ -88,12 +91,4 @@ class JobSerializer(serializers.ModelSerializer):
 class RequiredJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
-        fields = (
-            'id',
-            'user',
-            'job_post_date',
-            'job_name',
-            'company_name',
-            'salary',
-            'status'
-        )
+        fields = '__all__'

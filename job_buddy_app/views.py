@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response 
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .serializers import JobSerializer, JobImagesSerializer, RequiredJobImagesSerializer, RequiredJobSerializer
 from .models import Job, JobImages
@@ -48,6 +49,7 @@ def home_page(request, format=None):
         'All Users': reverse('job_buddy_users:all_users', request=request, format=format),
         'Users with Jobs': reverse('job_buddy_users:all_users_job', request=request, format=format),
         'All Job Images': reverse('images_job', request=request, format=format),
+        'State and Status Choices': reverse('choices', request=request, format=format),
     })
 
 class JobList(JobSerializerSelectorMixin, generics.ListCreateAPIView):
@@ -206,7 +208,8 @@ class IndJobImage(JobImgSerializerSelectorMixin, generics.RetrieveUpdateDestroyA
         instance = self.get_object()
         instance.delete() 
         return Response({"message": "Job Image deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-    
+
+# User Jobs   
 
 class UserJobList(generics.ListAPIView):
     queryset = Job.objects.all()
@@ -217,6 +220,14 @@ class UserJobList(generics.ListAPIView):
         user_job_queryset = Job.objects.filter(user=args[0])
         serializer = self.get_serializer(user_job_queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Status and State options 
+class StatusStateOptions(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({
+            'status_choices': Job.STATUS_CHOICES,
+            'state_choices': Job.STATE_CHOICES
+        }, status=status.HTTP_200_OK)
 
 # Djoser Redirects to React 
 def redirect_activation_url(request, uid, token):
