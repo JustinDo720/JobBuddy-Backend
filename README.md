@@ -100,3 +100,15 @@ The backend is designed to offer seamless integration with the React frontend, u
     - Images
 - [x] API to query a specific User's post
     - If i want the queryset for user: "Thy" then it should return **ONLY** job posts by her
+- [x] Custom Commands with `manage.py` to add in *testing data*
+    - [x] Users 
+    - [x] Job for random Users
+- [x] Additional Model Fields for Job (NR --> Not Required):
+    - [x] Location (City TextField and State SelectionField)
+    - [x] Link (NR)
+    - [x] Job Summary (NR)
+- [x] Other Non Required fields:
+    - [x] Salary
+- [x] Create another READ serialier to showcase:
+    - Status Choices 
+    - State Choices
