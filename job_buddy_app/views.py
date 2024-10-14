@@ -10,6 +10,7 @@ from .models import Job, JobImages
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 # Mixins - We can share specific functionality 
 
@@ -65,6 +66,7 @@ class JobList(JobSerializerSelectorMixin, generics.ListCreateAPIView):
     """
     # Because of our Mixin, we DON'T need a serializer_class field: serializer_class = JobSerialzier 
     queryset = Job.objects.all().order_by('-job_post_date') 
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     # "GET" Method
     def list(self, request):

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import JobBuddyUser
 # from job_buddy_app.serializers import JobImagesSerializer
 from job_buddy_app.models import Job, JobImages
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class JobBuddyUserSerializer(serializers.ModelSerializer):
@@ -66,3 +67,13 @@ class UserSpecificJobSerialzier(serializers.ModelSerializer):
             'email',
             'user_jobs'
         )
+
+# Customized Token
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Add your extra responses here
+        data['username'] = self.user.username
+        return data
