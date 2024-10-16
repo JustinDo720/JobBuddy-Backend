@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
+    'storages',
+
 ]
 
 MIDDLEWARE = [
@@ -139,11 +141,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# # Static files (CSS, JavaScript, Images) LOCAL
+# # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = 'staticfiles'
+# STATIC_URL = 'static/'
+# STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -157,9 +159,9 @@ CORS_ORIGIN_WHITELIST = (
   'http://localhost:3000',
 )
 
-# Media Files
-MEDIA_URL = '/uploads/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
+# # Media Files LOCAL
+# MEDIA_URL = '/uploads/'
+# MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
 
 # Django SWT Authentication System
 REST_FRAMEWORK = {
@@ -205,3 +207,45 @@ EMAIL_PORT = 587  # Port for TLS
 EMAIL_USE_TLS = True  # Use TLS
 EMAIL_HOST_USER = env('JB_EMAIL_HOST_USER')  
 EMAIL_HOST_PASSWORD = env('JB_EMAIL_HOST_PASSWORD') 
+
+# Django S3 Bucket 
+# AWS_ACCESS_KEY_ID = env('JB_AWS_ACCESS_KEY')
+# AWS_SECRET_ACCESS_KEY = env('JB_AWS_SECRET_KEY')
+# AWS_STORAGE_BUCKET_NAME = env('JB_AWS_BUCKET_NAME')
+# AWS_DEFAULT_ACL = 'public-read'
+# # For Media Files
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# # For Static Files
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# # AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_S3_FILE_UPLOAD_MAX_SIZE = 10485760  # Example: 10 MB max
+
+# # Static and Media files Boto3 Storage
+# MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/uploads/'  # Update with your bucket's URL
+# MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/media')
+# STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/'  # Update with your bucket's URL
+
+# AWS S3 Bucket Configurations
+AWS_ACCESS_KEY_ID = env('JB_AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = env('JB_AWS_SECRET_KEY')
+AWS_STORAGE_BUCKET_NAME = env('JB_AWS_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'us-east-1'  # No leading space before region name
+
+# S3 static and media file settings
+AWS_S3_FILE_OVERWRITE = False 
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+MEDIA_URL = 'media/'
+STATIC_URL = 'staticfiles/'
+
+# FIX: Django 4.2 >
+STORAGES={
+        # Media Files 
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        }
+}
