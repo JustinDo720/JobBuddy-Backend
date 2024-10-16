@@ -28,11 +28,11 @@ class UserJobImagesSerializer(serializers.ModelSerializer):
         )
 
 class UserJobSerializer(serializers.ModelSerializer):
-    
+    location = serializers.SerializerMethodField
     # It would be 'job_buddy_app:specific_job' however, we didn't put the 
     # app_name = 'job_buddy_app'
     # in our job_buddy_app.urls
-    job_link = serializers.HyperlinkedIdentityField(
+    job_api_link = serializers.HyperlinkedIdentityField(
         view_name='specific_job',
         lookup_field='id'
     )
@@ -40,17 +40,22 @@ class UserJobSerializer(serializers.ModelSerializer):
     # Again make sure this matches with the reverse (related name)
     # in your JobImages Model
     job_images = UserJobImagesSerializer(many=True, read_only=True)
+    def get_location(self, job_object):
+        return job_object.location()
     
     class Meta:
         model = Job
         fields = (
             'id',
             'job_name',
+            'job_api_link',
             'job_link',
             'job_post_date',
             'company_name',
             'salary',
             'status',
+            'job_summary',
+            'location',
             'job_images'
 
         )
@@ -76,4 +81,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add your extra responses here
         data['username'] = self.user.username
+        data['user_id'] = self.user.id
         return data
