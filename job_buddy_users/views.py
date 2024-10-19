@@ -62,7 +62,7 @@ class UserSpecificJobs(generics.ListAPIView):
             2) Returns a list of users with their job posting
     """
     queryset = JobBuddyUser.objects.all()
-    serializer_class = UserSpecificJobSerialzier
+    serializer_class = UserSpecificJobSerialzier 
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()

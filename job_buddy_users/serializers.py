@@ -13,17 +13,22 @@ class JobBuddyUserSerializer(serializers.ModelSerializer):
 
 
 class UserJobImagesSerializer(serializers.ModelSerializer):
+    job_img_resized = serializers.SerializerMethodField()
     job_img_api_link = serializers.HyperlinkedIdentityField(
         view_name='individual_image_job',
         lookup_field='id'
     )
+
+    def get_job_img_resized(self, job_img):
+        return job_img.get_resize_image()
 
     class Meta:
         model = JobImages
         fields = (
             'id',
             'job_img',
-            'job_img_api_link'
+            'job_img_api_link',
+            'job_img_resized',
 
         )
 
@@ -63,8 +68,13 @@ class UserJobSerializer(serializers.ModelSerializer):
 
 class UserSpecificJobSerialzier(serializers.ModelSerializer):
     # Use this serializer to retrieve jobs for a User
-    user_jobs = UserJobSerializer(many=True, read_only=True)
+    user_jobs = serializers.SerializerMethodField()
     
+    def get_user_jobs(self, specifc_user):
+        # Note that the user_jobs is actually the related name in our Jobs Model for our user field
+        user_jobs = specifc_user.user_jobs.all().order_by('-job_post_date')
+        return UserJobSerializer(user_jobs,many=True,read_only=True, context=self.context).data
+
     class Meta:
         model = JobBuddyUser
         fields = (

@@ -1,5 +1,10 @@
 from django.db import models
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
 from job_buddy_users.models import JobBuddyUser
+import os 
+from django.core.files import File
 
 # # Create your models here.
 class Job(models.Model):
@@ -113,3 +118,39 @@ class Job(models.Model):
 class JobImages(models.Model):
     job = models.ForeignKey(Job, related_name='job_images', on_delete=models.CASCADE)
     job_img = models.ImageField(upload_to='job_img/')
+    job_img_resized = models.ImageField(upload_to='job_img_resized/', blank=True, null=True)
+
+    def make_resize_image(self, img, width=500, height=500):
+        # We need to open the image 
+        image = Image.open(img)
+
+        # Resizing our image
+        image = image.resize((width,height))
+
+        # Saving our image in memory so it would be used as a resized image 
+        img_io = BytesIO()
+        image.save(img_io, format='png', quality=85)
+
+        # Construct a File object 
+        resized_img_file = File(img_io, name=img.name)
+        return resized_img_file
+    
+    def get_resize_image(self):
+        if self.job_img_resized:  # if theres a resized version already then we could set the resized name
+            resized_name = self.job_img_resized.name.split('/')[-1]
+
+        # Checking if we have a resized image already then we return its url
+        # The url looks something like: [https,'', storage, app, job_img, img_name]
+        if self.job_img_resized and resized_name == self.job_img.url.split('/')[-1]:
+            return self.job_img_resized.url
+        else:
+            if self.job_img:
+                # Our function make_resize_image will use pillow etc to resize
+                self.job_img_resized = self.make_resize_image(self.job_img)
+                self.save()
+
+                return self.job_img_resized.url
+            else:
+                return ''
+        
+    
