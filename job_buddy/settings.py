@@ -26,7 +26,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-je73tfk#)daqx&$vlzm+=b27)!=7o6-@a892eo0fpn^9_r%6b5'
+SECRET_KEY = env('JB_SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,23 +92,30 @@ WSGI_APPLICATION = 'job_buddy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# # Local Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': env('LOCAL_DB_NAME'),
+#         'USER': env('LOCAL_DB_USER'),
+#         'PASSWORD': env('LOCAL_DB_PASSWORD'),
+#         'HOST': env('LOCAL_DB_HOST'),
+#         'PORT': env('LOCAL_DB_PORT'),
+#     }
+# }
+
+# Production Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('LOCAL_DB_NAME'),
-        'USER': env('LOCAL_DB_USER'),
-        'PASSWORD': env('LOCAL_DB_PASSWORD'),
-        'HOST': env('LOCAL_DB_HOST'),
-        'PORT': env('LOCAL_DB_PORT'),
+        'NAME': env('PROD_DB_NAME'),
+        'USER': env('PROD_DB_USER'),
+        'PASSWORD': env('PROD_DB_PASSWORD'),
+        'HOST': env('PROD_DB_HOST'),
+        'PORT': 57333,
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / "db.sqlite3",  # Using BASE_DIR to point to the database file
-#     }
-# }
 
 
 # Password validation
@@ -184,10 +192,10 @@ REST_FRAMEWORK = {
 # We're using Rotate Tokens for extra security because when issuing a new Access Token we'll get a new refresh token
 # However, the lifespan will remain the same
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Short lifetime for security
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token allows users to get new access tokens
-    'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
-    'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),  # Short lifetime for security
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),     # Refresh token allows users to get new access tokens
+    # 'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
+    # 'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
 }
 
 DJOSER = {
