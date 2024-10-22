@@ -26,7 +26,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-je73tfk#)daqx&$vlzm+=b27)!=7o6-@a892eo0fpn^9_r%6b5'
+SECRET_KEY = env('JB_SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
+    'storages',
+
 ]
 
 MIDDLEWARE = [
@@ -89,23 +92,30 @@ WSGI_APPLICATION = 'job_buddy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# # Local Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': env('LOCAL_DB_NAME'),
+#         'USER': env('LOCAL_DB_USER'),
+#         'PASSWORD': env('LOCAL_DB_PASSWORD'),
+#         'HOST': env('LOCAL_DB_HOST'),
+#         'PORT': env('LOCAL_DB_PORT'),
+#     }
+# }
+
+# Production Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('LOCAL_DB_NAME'),
-        'USER': env('LOCAL_DB_USER'),
-        'PASSWORD': env('LOCAL_DB_PASSWORD'),
-        'HOST': env('LOCAL_DB_HOST'),
-        'PORT': env('LOCAL_DB_PORT'),
+        'NAME': env('PROD_DB_NAME'),
+        'USER': env('PROD_DB_USER'),
+        'PASSWORD': env('PROD_DB_PASSWORD'),
+        'HOST': env('PROD_DB_HOST'),
+        'PORT': 57333,
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / "db.sqlite3",  # Using BASE_DIR to point to the database file
-#     }
-# }
 
 
 # Password validation
@@ -139,11 +149,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# # Static files (CSS, JavaScript, Images) LOCAL
+# # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = 'staticfiles'
+# STATIC_URL = 'static/'
+# STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -157,9 +167,9 @@ CORS_ORIGIN_WHITELIST = (
   'http://localhost:3000',
 )
 
-# Media Files
-MEDIA_URL = '/uploads/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
+# # Media Files LOCAL
+# MEDIA_URL = '/uploads/'
+# MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/static')
 
 # Django SWT Authentication System
 REST_FRAMEWORK = {
@@ -167,11 +177,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
         # During Api requests, we use SJWT
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # Enable session-based and basic auth for the browsable API
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        
     ),
 }
 
@@ -181,15 +192,15 @@ REST_FRAMEWORK = {
 # We're using Rotate Tokens for extra security because when issuing a new Access Token we'll get a new refresh token
 # However, the lifespan will remain the same
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Short lifetime for security
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token allows users to get new access tokens
-    'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
-    'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),  # Short lifetime for security
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),     # Refresh token allows users to get new access tokens
+    # 'ROTATE_REFRESH_TOKENS': True,  # Refresh token rotates upon use for added security
+    # 'BLACKLIST_AFTER_ROTATION': True,  # Ensures old refresh tokens can't be reused
 }
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '/activate/{uid}/{token}', # We just need to make sure this is sent to the front end page 
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
@@ -205,3 +216,45 @@ EMAIL_PORT = 587  # Port for TLS
 EMAIL_USE_TLS = True  # Use TLS
 EMAIL_HOST_USER = env('JB_EMAIL_HOST_USER')  
 EMAIL_HOST_PASSWORD = env('JB_EMAIL_HOST_PASSWORD') 
+
+# Django S3 Bucket 
+# AWS_ACCESS_KEY_ID = env('JB_AWS_ACCESS_KEY')
+# AWS_SECRET_ACCESS_KEY = env('JB_AWS_SECRET_KEY')
+# AWS_STORAGE_BUCKET_NAME = env('JB_AWS_BUCKET_NAME')
+# AWS_DEFAULT_ACL = 'public-read'
+# # For Media Files
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# # For Static Files
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# # AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_S3_FILE_UPLOAD_MAX_SIZE = 10485760  # Example: 10 MB max
+
+# # Static and Media files Boto3 Storage
+# MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/uploads/'  # Update with your bucket's URL
+# MEDIA_ROOT = os.path.join(BASE_DIR,'job_buddy_app/media')
+# STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/'  # Update with your bucket's URL
+
+# AWS S3 Bucket Configurations
+AWS_ACCESS_KEY_ID = env('JB_AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = env('JB_AWS_SECRET_KEY')
+AWS_STORAGE_BUCKET_NAME = env('JB_AWS_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'us-east-1'  # No leading space before region name
+
+# S3 static and media file settings
+AWS_S3_FILE_OVERWRITE = False 
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+MEDIA_URL = 'media/'
+STATIC_URL = 'staticfiles/'
+
+# FIX: Django 4.2 >
+STORAGES={
+        # Media Files 
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        }
+}

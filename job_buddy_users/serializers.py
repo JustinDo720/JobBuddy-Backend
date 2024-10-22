@@ -13,26 +13,31 @@ class JobBuddyUserSerializer(serializers.ModelSerializer):
 
 
 class UserJobImagesSerializer(serializers.ModelSerializer):
+    job_img_resized = serializers.SerializerMethodField()
     job_img_api_link = serializers.HyperlinkedIdentityField(
         view_name='individual_image_job',
         lookup_field='id'
     )
+
+    def get_job_img_resized(self, job_img):
+        return job_img.get_resize_image()
 
     class Meta:
         model = JobImages
         fields = (
             'id',
             'job_img',
-            'job_img_api_link'
+            'job_img_api_link',
+            'job_img_resized',
 
         )
 
 class UserJobSerializer(serializers.ModelSerializer):
-    
+    location = serializers.SerializerMethodField
     # It would be 'job_buddy_app:specific_job' however, we didn't put the 
     # app_name = 'job_buddy_app'
     # in our job_buddy_app.urls
-    job_link = serializers.HyperlinkedIdentityField(
+    job_api_link = serializers.HyperlinkedIdentityField(
         view_name='specific_job',
         lookup_field='id'
     )
@@ -40,17 +45,22 @@ class UserJobSerializer(serializers.ModelSerializer):
     # Again make sure this matches with the reverse (related name)
     # in your JobImages Model
     job_images = UserJobImagesSerializer(many=True, read_only=True)
+    def get_location(self, job_object):
+        return job_object.location()
     
     class Meta:
         model = Job
         fields = (
             'id',
             'job_name',
+            'job_api_link',
             'job_link',
             'job_post_date',
             'company_name',
             'salary',
             'status',
+            'job_summary',
+            'location',
             'job_images'
 
         )
@@ -58,8 +68,13 @@ class UserJobSerializer(serializers.ModelSerializer):
 
 class UserSpecificJobSerialzier(serializers.ModelSerializer):
     # Use this serializer to retrieve jobs for a User
-    user_jobs = UserJobSerializer(many=True, read_only=True)
+    user_jobs = serializers.SerializerMethodField()
     
+    def get_user_jobs(self, specifc_user):
+        # Note that the user_jobs is actually the related name in our Jobs Model for our user field
+        user_jobs = specifc_user.user_jobs.all().order_by('-job_post_date')
+        return UserJobSerializer(user_jobs,many=True,read_only=True, context=self.context).data
+
     class Meta:
         model = JobBuddyUser
         fields = (
@@ -76,4 +91,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add your extra responses here
         data['username'] = self.user.username
+        data['user_id'] = self.user.id
         return data

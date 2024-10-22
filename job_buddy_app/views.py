@@ -225,6 +225,9 @@ class UserJobList(generics.ListAPIView):
 
 # Status and State options 
 class StatusStateOptions(APIView):
+    
+    permission_classes=[IsAuthenticatedOrReadOnly]
+
     def get(self, request, *args, **kwargs):
         return Response({
             'status_choices': Job.STATUS_CHOICES,
@@ -238,5 +241,5 @@ def redirect_activation_url(request, uid, token):
 def redirect_password_reset_url(request, uid, token):
     return redirect(f'{REACT_URL}/password/reset/confirm/{uid}/{token}')
 
-def redirect_username_reset_url(request, uid, token):
-    return redirect(f'{REACT_URL}/username/reset/confirm/{uid}/{token}')
+def redirect_email_reset_url(request, uid, token):
+    return redirect(f'{REACT_URL}/email/reset/confirm/{uid}/{token}')

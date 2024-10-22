@@ -4,6 +4,7 @@ from .models import Job, JobImages
 
 class JobImagesSerializer(serializers.ModelSerializer):
     job_name = serializers.SerializerMethodField()
+    job_img_resized = serializers.SerializerMethodField()
     # Here we use Related Field instead of Identity because we're referring to another Model
     # So we just point it to a view that showcases an indiviudal job information 
     job_url = serializers.HyperlinkedRelatedField(
@@ -24,7 +25,10 @@ class JobImagesSerializer(serializers.ModelSerializer):
     # Naming convention get_<serializer_method_field_name>
     def get_job_name(self, job_instance):
         return job_instance.job.job_name
-
+    
+    def get_job_img_resized(self, job_img):
+        return job_img.get_resize_image()
+    
     class Meta:
         model = JobImages
         fields = (
@@ -33,6 +37,7 @@ class JobImagesSerializer(serializers.ModelSerializer):
             'job_url',
             'job_img',
             'job_img_api_link',
+            'job_img_resized',
         )
 
 # This is to avoid adding additional uncessary fields to our base JobImagesSerializer 

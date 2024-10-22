@@ -112,3 +112,7 @@ The backend is designed to offer seamless integration with the React frontend, u
 - [x] Create another READ serialier to showcase:
     - Status Choices 
     - State Choices
+- [x] Job Images 
+    - Included in Users Jobs
+    - Resized Images to a specific width x height 
+    - Resized Images is self made, if it doesn't exist then it will create on spot
